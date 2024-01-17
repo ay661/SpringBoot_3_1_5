@@ -40,7 +40,7 @@ public class Init implements ApplicationListener<ContextRefreshedEvent> {
         admin.setUsername("admin");
         admin.setPassword(encoder.encode("admin"));
         admin.setAge(0);
-        admin.setEmail("admin@gmail.com");
+        admin.setEmail("admin@mail.ru");
         admin.setRoles(adminRoles);
         userRepository.save(admin);
 
@@ -48,7 +48,7 @@ public class Init implements ApplicationListener<ContextRefreshedEvent> {
         user.setUsername("user");
         user.setPassword(encoder.encode("user"));
         user.setAge(25);
-        user.setEmail("user@yandex.ru");
+        user.setEmail("user@mail.ru");
         user.setRoles(userRoles);
         userRepository.save(user);
 
