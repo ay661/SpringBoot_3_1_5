@@ -1,14 +1,9 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
 <head>
-    <title>Welcome to Admin page</title>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script type="text/javascript">
-        jQuery(document).ready(function($) {
-            $(".clickable-row").click(function() {
-                window.location = $(this).data("href");
-            });
-        });
+    <meta charset="UTF-8">
+    <title>User details</title>
+    <script>
         function hidePassword() {
             var x = document.getElementById("userPassword");
             if (x.type === "password") {
@@ -19,14 +14,6 @@
         }
     </script>
     <style>
-        h1 {
-            width: 100%; /* Ширина слоя */
-            padding: 10px; /* Поля вокруг текста */
-            font-family: "Arial Black";
-            text-align: center;
-            color: SlateBlue;
-        }
-        .pointer {cursor: pointer;}
         th, td {
             padding: 12px;
         }
@@ -47,33 +34,24 @@
     </style>
 </head>
 <body>
+<h2>User details:</h2>
 
-<h1>Welcome to Admin page!</h1>
-<h2>List of all users:</h2>
-<div>
-    <table border="1">
-        <tr>
-            <th>Id</th>
-            <th>Username</th>
-            <th>Email</th>
-            <th>Age</th>
-        </tr>
-        <tr class='clickable-row pointer' th:attr="data-href=@{/admin/userdetails(id=${user.id})}" th:each="user : ${users}">
-            <td th:utext="${user.id}">...</td>
-            <td th:utext="${user.username}">...</td>
-            <td th:utext="${user.email}">...</td>
-            <td th:utext="${user.age}">...</td>
-        </tr>
-    </table>
-</div>
-<br>
+<table border="1">
+    <tr>
+        <th scope="col">Id</th>
+        <th scope="col">Username</th>
+        <th scope="col">Age</th>
+        <th scope="col">Email</th>
+    </tr>
+    <td th:utext="${user.id}">UserId</td>
+    <td th:utext="${user.username}">Username</td>
+    <td th:utext="${user.age}">Age</td>
+    <td th:utext="${user.email}">Email</td>
+</table>
 <hr>
-<div>
-    <h2>Create a new user</h2>
-</div>
-<br>
+<h3>Update user data:</h3>
 <table>
-    <form th:method="POST" th:action="@{/admin/create}" th:object="${user}">
+    <form th:method="POST" th:action="@{/admin/update(id=${user.id})}" th:object="${user}">
         <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
         <tr>
             <td>
@@ -119,13 +97,17 @@
         </tr>
         <tr>
             <td>
-                <button type="submit" style="height:2rem; width:4rem; font-size: medium" >Create</button>
+                <button type="submit" style="height:2rem; width:4rem; font-size: medium" >Update</button>
             </td>
         </tr>
     </form>
 </table>
+<hr>
+<form th:method="POST" th:action="@{/admin/delete(id=${user.id})}">
+    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+    Do you want to delete user?  <button type="submit" style="height:2rem; width:8rem; font-size: medium" >Delete user</button>
+</form>
 <a class="logout" th:href="@{/logout}">Logout</a>
 <a class="home" th:href="@{/admin/all}">Home</a>
-
 </body>
 </html>

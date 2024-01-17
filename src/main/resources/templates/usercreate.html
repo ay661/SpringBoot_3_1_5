@@ -1,17 +1,14 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3" lang="en">
 <head>
-    <title>Welcome to your personal page!</title>
+    <title>User created</title>
     <style>
-        h1 {
+        h3 {
             width: 100%; /* Ширина слоя */
             padding: 10px; /* Поля вокруг текста */
             font-family: "Arial Black";
             text-align: center;
-            color: SlateBlue;
-        }
-        th, td {
-            padding: 12px;
+            color: black;
         }
         .logout {
             position: absolute;
@@ -20,24 +17,19 @@
             font-size: 1.25rem;
             color: red;
         }
+
+        .home {
+            position: absolute;
+            top: 0.5rem;
+            right: 1rem;
+            font-size: 1.25rem;
+        }
     </style>
 </head>
 <body>
-<h1>Welcome to your personal page!</h1>
-<h2>Your details:</h2>
-<br>
-<table border="1">
-    <tr>
-        <th scope="col">Id</th>
-        <th scope="col">Username</th>
-        <th scope="col">Age</th>
-        <th scope="col">Email</th>
-    </tr>
-    <td th:utext="${user.id}">UserId</td>
-    <td th:utext="${user.username}">Username</td>
-    <td th:utext="${user.age}">Age</td>
-    <td th:utext="${user.email}">Email</td>
-</table>
+<h3>User created</h3>
+
 <a class="logout" th:href="@{/logout}">Logout</a>
+<a class="home" th:href="@{/admin/all}">Home</a>
 </body>
 </html>
