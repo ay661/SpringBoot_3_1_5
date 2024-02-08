@@ -1,58 +1,62 @@
 package ru.kata.spring.boot_security.demo.model;
 
-
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
 import javax.persistence.*;
-import java.util.Collection;
 import java.util.Objects;
 import java.util.Set;
 
 @Entity
 @Table(name = "users")
-public class User implements UserDetails {
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(name = "name", unique = true)
     private String username;
     private String password;
-    private Long age;
     private String email;
-
-
+    private Integer age;
     @ManyToMany
-    @JoinTable(name = "users_roles",
+    @JoinTable(
+            name = "roles_users",
             joinColumns = @JoinColumn(name = "users_id"),
             inverseJoinColumns = @JoinColumn(name = "roles_id"))
     private Set<Role> roles;
 
     public User() {
+
     }
 
-    public User(String username, String password, Long age, String email) {
+    public User(String username, String password, String email, Integer age, Set<Role> roles) {
         this.username = username;
         this.password = password;
-        this.age = age;
         this.email = email;
-
+        this.age = age;
+        this.roles = roles;
     }
 
     public Long getId() {
         return id;
     }
 
-    public void setAge(Long age) {
-        this.age = age;
+    public String getUsername() {
+        return username;
     }
 
-    public Long getAge() {
+    public String getPassword() {
+        return password;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public Integer getAge() {
         return age;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public Set<Role> getRoles() {
+        return roles;
     }
 
     public void setUsername(String username) {
@@ -63,58 +67,16 @@ public class User implements UserDetails {
         this.password = password;
     }
 
-    public String getEmail() {
-        return email;
-    }
-
     public void setEmail(String email) {
         this.email = email;
     }
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return getRoles();
+    public void setAge(Integer age) {
+        this.age = age;
     }
 
-    @Override
-    public String getPassword() {
-        return password;
-    }
-
-    @Override
-    public String getUsername() {
-        return username;
-    }
-
-    public Set<Role> getRoles() {
-        return roles;
-    }
-    public String getRoles2() {
-        return getRoles().toString().replaceAll("\\,|\\[|\\]|\\s", " ");
-    }
-
-    public void setRoles(Collection<Role> roles) {
-        this.roles = (Set<Role>) roles;
-    }
-
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return true;
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
     }
 
     @Override
@@ -122,23 +84,21 @@ public class User implements UserDetails {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return Objects.equals(id, user.id);
+        return Objects.equals(username, user.username)
+                && Objects.equals(email, user.email)
+                && Objects.equals(age, user.age);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(username, email, age);
     }
 
     @Override
     public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                ", age='" + age + '\'' +
-                ", email='" + email + '\'' +
-                ", roles=" + roles +
-                '}';
+        return "User: name=" + username
+                + " email=" + email
+                + " age=" + age;
     }
+
 }

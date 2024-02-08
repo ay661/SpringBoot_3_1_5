@@ -1,56 +1,69 @@
 package ru.kata.spring.boot_security.demo.controller;
 
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.ModelMap;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.kata.spring.boot_security.demo.model.Role;
 import ru.kata.spring.boot_security.demo.model.User;
-import ru.kata.spring.boot_security.demo.service.RoleServiceImpl;
-import ru.kata.spring.boot_security.demo.service.UserServiceImpl;
+import ru.kata.spring.boot_security.demo.service.RoleService;
+import ru.kata.spring.boot_security.demo.service.UserService;
 
-import java.security.Principal;
+import java.util.List;
 
-@Controller
-@RequestMapping("/admin")
+@RestController
+@RequestMapping("/api/admin")
 public class AdminController {
+    private final UserService userService;
+    private final RoleService roleService;
 
-    private final UserServiceImpl userServiceImpl;
-    private final RoleServiceImpl roleServiceImpl;
-
-
-    @Autowired
-    public AdminController(UserServiceImpl userServiceImpl, RoleServiceImpl roleServiceImpl) {
-        this.userServiceImpl = userServiceImpl;
-        this.roleServiceImpl = roleServiceImpl;
+    public AdminController(UserService userService, RoleService roleService) {
+        this.userService = userService;
+        this.roleService = roleService;
     }
 
-    @GetMapping()
-    public String showAll(ModelMap model, Principal principal) {
-        model.addAttribute("users", userServiceImpl.getAllUsers());
-        model.addAttribute("loginUser", userServiceImpl.findByUsername(principal.getName()));
-        model.addAttribute("roles", roleServiceImpl.findAllRoles());
-        model.addAttribute("userNew", new User());
-        return "admin/showAll";
+    @GetMapping("/getUsers")
+    public ResponseEntity<List<User>> getUsers() {
+        return new ResponseEntity<>(userService.getUsers(), HttpStatus.OK);
     }
 
-
-    @PostMapping
-    public String create(@ModelAttribute("user") User user) {
-        userServiceImpl.saveUser(user);
-        return "redirect:/admin";
+    @GetMapping("/getRoles")
+    public ResponseEntity<List<Role>> getRoles() {
+        return new ResponseEntity<>(roleService.getRoles(), HttpStatus.OK);
     }
 
-
-    @PatchMapping("/{id}")
-    public String update(@ModelAttribute("user") User user, @PathVariable("id") long id) {
-        userServiceImpl.updateUser(user);
-        return "redirect:/admin";
+    @GetMapping("/getUser")
+    public ResponseEntity<User> getUser(@RequestParam("id") Long id) {
+        if (id == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        User user = userService.getById(id).orElse(null);
+        if (user == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}")
-    public String delete(@PathVariable("id") long id) {
-        userServiceImpl.deleteUser(userServiceImpl.findUserById(id));
-        return "redirect:/admin";
+    @PostMapping("/create")
+    public ResponseEntity<Void> createUser(@RequestBody User user) {
+        userService.addUser(user);
+        return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
+    @PostMapping(value = "/update")
+    public ResponseEntity<Void> updateUser(@RequestBody User user, @RequestParam("id") Long id) {
+        if (id == null || userService.getById(id).isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        userService.updateUser(id, user);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @PostMapping(value = "/delete")
+    public ResponseEntity<Void> deleteUser(@RequestParam("id") Long id) {
+        if (id == null || userService.getById(id).isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        userService.deleteUser(id);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }
